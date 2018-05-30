@@ -1,1 +1,4 @@
 node_modules/
+
+# the output is not formatted so prettier would break the tests 
+transfroms/__testfixtures__/dispatch-to-props-getter.output.js
