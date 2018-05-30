@@ -18,11 +18,13 @@ module.exports = function(fileInfo, api, options) {
   const root = j(fileInfo.source)
 
   root
-    .find(j.ArrowFunctionExpression) 
-    .filter(p => 
-      j(p).find(j.CallExpression)
+    .find(j.ArrowFunctionExpression)
+    .filter(
+      p =>
+        j(p)
+          .find(j.CallExpression)
           .filter(c => c.value.callee.name === 'bindActionCreators')
-          .size() === 1
+          .size() === 1,
     )
     .replaceWith(p => p.value.body.arguments[0])
 
@@ -41,8 +43,8 @@ module.exports = function(fileInfo, api, options) {
 
   return root.toSource()
 
-// e.scope.lookup
-};
+  // e.scope.lookup
+}
 
 // TypeParameterDeclaration
 // TypeParameterInstantiation
@@ -58,4 +60,3 @@ module.exports = function(fileInfo, api, options) {
 // ImportDefaultSpecifier
 // ImportDeclaration
 // Import
-
