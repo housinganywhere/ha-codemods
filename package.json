@@ -1,9 +1,28 @@
 {
+  "name": "ha-codemods",
+  "version": "0.0.1",
+  "description": "JavaScript codemod scripts",
+  "keywords": [
+    "codemod",
+    "recast",
+    "javascript"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/housinganywhere/ha-codemods.git"
+  },
+  "bugs": {
+    "url": "https://github.com/housinganywhere/ha-codemods/issues"
+  },
+  "homepage": "https://github.com/housinganywhere/ha-codemods#readme",
+  "author": "gillchristian <gillchristiang@gmail.com>",
+  "license": "MIT",
   "scripts": {
     "test": "jest",
     "mod": "jscodeshift",
     "format": "prettier --write '**/*.{js,json,md}'",
     "format:changed": "pretty-quick",
+    "release": "np",
     "precommit": "pretty-quick --staged"
   },
   "dependencies": {
