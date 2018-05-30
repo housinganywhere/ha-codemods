@@ -1,62 +1,79 @@
-const reduxImportDeclaration = {
+const R = require('ramda');
+
+const importDeclarationRedux = {
   source: {
     type: 'Literal',
     value: 'redux',
   },
-}
+};
 
-const bindActionCreatorsImportSpecifier = {
+const importSpecifierBAC = {
   imported: {
     type: 'Identifier',
     name: 'bindActionCreators',
   },
-}
+};
+
+const isReduxEmptyImport = R.both(
+  R.pathEq(['value', 'source', 'value'], 'redux'),
+  R.pathEq(['value', 'specifiers', 'length'], 0),
+);
+
+const hasOnlyOneParam = R.pathEq(['value', 'params', 'length'], 1);
+const bodyIsCallExpression = R.pathEq(
+  ['value', 'body', 'type'],
+  'CallExpression',
+);
+const bodyCalleeIsBAC = R.pathEq(
+  ['value', 'body', 'callee', 'name'],
+  'bindActionCreators',
+);
+
+const shouldReplace = R.allPass([
+  hasOnlyOneParam,
+  bodyIsCallExpression,
+  bodyCalleeIsBAC,
+]);
+
+const firstBodyArgument = R.path(['value', 'body', 'arguments', 0]);
 
 module.exports = function(fileInfo, api, options) {
-  const { jscodeshift: j } = api
+  if (R.test(/tsx?$/, fileInfo.path)) {
+    return fileInfo.source;
+  }
 
-  const root = j(fileInfo.source)
+  const { jscodeshift: j } = api;
 
+  const root = j(fileInfo.source);
+
+  let didRemove = false;
+
+  // find functions containing bindActionCreators and
+  // replace with bindActionCreators's first argument
   root
     .find(j.ArrowFunctionExpression)
-    .filter(
-      p =>
-        j(p)
-          .find(j.CallExpression)
-          .filter(c => c.value.callee.name === 'bindActionCreators')
-          .size() === 1,
-    )
-    .replaceWith(p => p.value.body.arguments[0])
+    .filter(shouldReplace)
+    .replaceWith(p => {
+      didRemove = true;
 
-  root
-    .find(j.ImportDeclaration, reduxImportDeclaration)
-    .find(j.ImportSpecifier, bindActionCreatorsImportSpecifier)
-    .remove()
+      return firstBodyArgument(p);
+    });
 
-  // TODO: find the way to remove the import from redux when is empty
+  // prevents removing the import when there's a
+  // bindActionCreator imported but was not remvoed
+  if (didRemove) {
+    // remove "bindActionCreators" from redux import
+    root
+      .find(j.ImportDeclaration, importDeclarationRedux)
+      .find(j.ImportSpecifier, importSpecifierBAC)
+      .remove();
 
-  // const reduxImport = root
-  //   .find(j.ImportDeclaration)
-  //   .filter(p => p.value.source === 'redux')
+    // remove redux import if empty
+    root
+      .find(j.ImportDeclaration)
+      .filter(isReduxEmptyImport)
+      .remove();
+  }
 
-  // console.log({ size: reduxImportDeclaration })
-
-  return root.toSource()
-
-  // e.scope.lookup
-}
-
-// TypeParameterDeclaration
-// TypeParameterInstantiation
-// TypeParameter
-
-// ArrowFunctionExpression
-// FunctionExpression
-
-// CallExpression
-
-// ImportSpecifier
-// ImportNamespaceSpecifier
-// ImportDefaultSpecifier
-// ImportDeclaration
-// Import
+  return root.toSource();
+};
