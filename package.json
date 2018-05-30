@@ -1,10 +1,7 @@
 {
   "scripts": {
     "mod": "jscodeshift",
-    "seed-a": "cat seeds/in-variable.js > examples/in-variable.js",
-    "seed-b": "cat seeds/with-compose.js > examples/with-compose.js",
-    "seed-c": "cat seeds/only-one-import-from-redux.js > examples/only-one-import-from-redux.js",
-    "seed": "yarn seed-a ; yarn seed-b ; yarn seed-c",
+    "seed": "cp -a seeds/. examples/",
     "format": "prettier --write '**/*.{js,json,md}'",
     "format:changed": "pretty-quick",
     "precommit": "pretty-quick --staged"
