@@ -4,9 +4,17 @@
     "seed-a": "cat seeds/in-variable.js > examples/in-variable.js",
     "seed-b": "cat seeds/with-compose.js > examples/with-compose.js",
     "seed-c": "cat seeds/only-one-import-from-redux.js > examples/only-one-import-from-redux.js",
-    "seed": "yarn seed-a ; yarn seed-b ; yarn seed-c"
+    "seed": "yarn seed-a ; yarn seed-b ; yarn seed-c",
+    "format": "prettier --write '**/*.{js,json,md}'",
+    "format:changed": "pretty-quick",
+    "precommit": "pretty-quick --staged"
   },
   "dependencies": {
     "jscodeshift": "^0.5.0"
+  },
+  "devDependencies": {
+    "husky": "^0.14.3",
+    "prettier": "^1.13.2",
+    "pretty-quick": "^1.6.0"
   }
 }
