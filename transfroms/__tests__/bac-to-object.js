@@ -14,5 +14,5 @@ const cases = [
 ];
 
 cases.forEach(c => {
-  defineTest(__dirname, 'bindactioncreators-to-object', null, c);
+  defineTest(__dirname, 'bac-to-object', null, c);
 });
